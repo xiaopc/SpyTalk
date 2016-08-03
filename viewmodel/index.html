@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Spy-talk">
+    <title>Spy-talk</title>
+    <link rel="stylesheet" href="static/pure-min.css">
+    <link rel="stylesheet" href="static/sweetalert/sweetalert.css">
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="static/style-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="static/style.css">
+    <!--<![endif]-->
+</head>
+<body>
+<div id="layout">
+    <a href="#menu" id="menuLink" class="menu-link">
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="#">SPY-TALK</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#/welcome" class="pure-menu-link">欢迎</a></li>
+                <li class="pure-menu-item"><a href="#/encrypt" class="pure-menu-link">发信</a></li>
+                <li class="pure-menu-item"><a href="#/go" class="pure-menu-link">收信</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">关于</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main-welcome">
+        <div class="content">
+            <div class="header">
+                <h1>安全传递敏感信息</h1>
+            </div>
+            <h2 class="content-subhead">前端加密，不受网络环境干扰。</h2>
+            <a class="pure-button pure-input-1 pure-button-primary" id="main-start">现在开始</a>
+        </div>
+    </div>
+
+    <div id="main-send-content">
+        <div class="content">
+            <div class="header">
+                <h1>输入您的信息</h1>
+            </div>
+            <form id="send-content" class="pure-form">
+                <a class="pure-button pure-button-active">普通编辑器</a>
+                <a class="pure-button pure-button-disabled">Markdown</a>
+                    <div class="expandingArea">
+                        <pre><br><span>{{ sendText }}</span><br><br></pre>
+                        <textarea class="pure-input-1" placeholder="请输入信息..." id="sendText" v-model="sendText"></textarea>
+                    </div>
+                <a class="pure-button pure-input-1 pure-button-primary" id="send-content-next">下一步</a>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-send-setting">
+        <div class="content">
+            <div class="header">
+                <h1>设置加密方式</h1>
+            </div>
+            <form class="pure-form pure-form-aligned">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="sendFilename">文件名*</label>
+                        <input id="sendFilename" type="text" placeholder="英文字符/数字 长3-16位">
+                    </div>
+                    
+                    <div class="pure-control-group">
+                        <label>密码*</label>
+                        <input id="sendPassword" type="text">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>加密方式</label>
+                        <label for="encryptMethod-1" class="pure-checkbox">
+                            <input id="encryptMethod-1" type="radio" value="encryptMethod-1" checked>
+                            AES-CFB (<a href="https://zh.wikipedia.org/wiki/%E5%88%9D%E5%A7%8B%E5%90%91%E9%87%8F">IV</a> 固定)
+                        </label>
+                    
+                        <label for="encryptMethod-2" class="pure-radio">
+                            <input id="encryptMethod-2" type="radio" value="encryptMethod-2" disabled>
+                            更多方式请期待
+                        </label>
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label for="isIPcheck">IP限制</label>
+                        <select id="isIPcheck">
+                            <option value="false">无限制</option>
+                            <option value="cn">只允许中国IP</option>
+                            <option value="us">只允许美国IP</option>
+                            <option disabled>--------------------</option>
+                            <option value="current">只允许当前IP(慎用)</option>
+                            <option disabled>--------------------</option>
+                            <option disabled>更多方式请期待</option>
+                        </select>
+                        <small>IP 数据提供：ipip.net</small>
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>附加设置</label>
+                        <label for="isDelOnce" class="pure-checkbox">
+                            <input id="isDelOnce" type="checkbox">
+                            回传密文时删除
+                        </label>
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label for="recaptcha"> </label>
+                        <div class="g-recaptcha" data-sitekey="<?php echo(Flight::get('reCaptchaSitekey')); ?>"></div>
+                    </div>
+                        <a class="pure-button pure-input-1 pure-button-primary" id="send-setting-next">下一步</a>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    
+    <div id="main-send-finish">
+        <div class="content">
+            <div class="header">
+                <h1>保存您的凭据</h1>
+            </div>
+            <h2 class="content-subhead">您的信息已加密保存。</h2>
+            <form class="pure-form" id="send-finish">
+                <fieldset>
+                    <legend>访问地址</legend>
+                    <input type="text" class="pure-input-1" id="sendURL" readonly>
+                </fieldset>
+                <div id="qrcode"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-recv-req">
+        <div class="content">
+            <div class="header">
+                <h1>请输入文件名</h1>
+            </div>
+            <form class="pure-form">
+                <input type="text" class="pure-input-1-2" id="recvName">
+                <a class="pure-button pure-button-primary" id="recv-req-next">下一步</a>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-recv-dec">
+        <div class="content">
+            <div class="header">
+                <h1>解密文件</h1>
+            </div>
+            <form class="pure-form">
+            <h2 class="content-subhead">密文( 加密方式: {{ recvMethod }} ):</h2>
+                <textarea class="pure-input-1" id="recvEncrypt" readonly>{{ recvEncrypt }}</textarea>
+            <h2 class="content-subhead">请输入密码:</h2>
+                <textarea class="pure-input-1" id="recvPsw"></textarea>
+                <a class="pure-button pure-input-1 pure-button-primary" id="recv-dec-next">下一步</a>
+            </form>
+        </div>
+    </div>
+    
+    <div id="main-recv-res">
+        <div class="content">
+            <div class="header">
+                <h1>解密结果</h1>
+            </div>
+            <h2 class="content-subhead">文件内容</h2>
+            <form class="pure-form">
+                <div class="expandingArea">
+                    <pre><br><span>{{ recvDecrypt }}</span><br><br></pre>
+                    <textarea class="pure-input-1" readonly id="recvDecrypt">{{ recvDecrypt }}</textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script src="static/vue.js"></script>
+<script src="static/director.min.js"></script>
+<script src="static/crypto-js-3.1.6/crypto-js.js"></script>
+<script src="static/function.js"></script>
+<script src="static/sweetalert/sweetalert.min.js"></script>
+<script src="static/ui.js"></script>
+<script src="https://<?php if ( (Flight::ipip()["status"] == "500") or (Flight::ipip()["data"]["0"] == "中国") ) {
+    echo('lab.xpc.im');
+} else {
+    echo('www.google.com');
+}
+?>/recaptcha/api.js?hl=zh_cn"></script>
+</body>
+</html>
